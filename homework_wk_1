@@ -1,0 +1,69 @@
+###########################
+# Question 3: Count records
+###########################
+
+SELECT
+	COUNT(1) AS "count"
+FROM 
+	yellow_taxi_trips
+WHERE
+	tpep_pickup_datetime >'2021-01-14 23:59:59' AND tpep_pickup_datetime < '2021-01-16 00:00:00';
+
+
+######################################
+# Question 4: Largest tip for each day
+######################################
+
+SELECT 
+	CAST(tpep_pickup_datetime AS DATE) as "day",
+	MAX(tip_amount) as "max_tip_amount"
+FROM 
+	yellow_taxi_trips
+WHERE
+	tpep_pickup_datetime >= '2021-01-01 00:00:00' AND tpep_pickup_datetime <= '2021-02-01 23:59:59'
+GROUP BY
+	1
+ORDER BY
+	2 DESC;
+
+
+######################################
+# Question 5: Most popular destination
+######################################
+
+SELECT 
+	COUNT(1) as "count",
+	zdo."Zone"
+FROM 
+	yellow_taxi_trips t,
+	zones zpu,
+	zones zdo
+WHERE 
+	t."PULocationID" = zpu."LocationID" AND
+	t."DOLocationID" = zdo."LocationID" AND
+	zpu."Zone" = 'Central Park' AND
+	t."tpep_pickup_datetime" >= '2021-01-14 00:00:00' AND t."tpep_pickup_datetime" <= '2021-01-14 23:59:59'
+GROUP BY
+	2
+ORDER BY
+	1 DESC;
+
+
+##################################
+# Question 6: Most expensive route
+##################################
+
+SELECT 
+	AVG(t."total_amount") as "avg_total_amount",
+	CONCAT(zpu."Zone", ' / ', zdo."Zone") AS "pick_up_drop_off"
+FROM 
+	yellow_taxi_trips t,
+	zones zpu,
+	zones zdo
+WHERE 
+	t."PULocationID" = zpu."LocationID" AND
+	t."DOLocationID" = zdo."LocationID"
+GROUP BY
+	2
+ORDER BY
+	1 DESC;
